@@ -1,0 +1,382 @@
+////INÍCIO
+////VETOR DO MUNICÍPIO
+var af = ee.FeatureCollection('users/arquivosdopj/altafloresta'); //CAMINHO ESPECIFICANDO O VETOR DA ÁREA DE ESTUDO
+var display = ee.Image(0).updateMask(0).paint(af, '000000', 1);
+Map.centerObject(af, 9);
+Map.addLayer(display, {palette:'000000'}, 'af');
+
+////IMAGENS SENTINEL VH
+var sentinel_16 = ee.ImageCollection('COPERNICUS/S1_GRD')
+  .filter(ee.Filter.eq('instrumentMode', 'IW'))
+  .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
+  .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
+  .filterMetadata('resolution_meters', 'equals' , 10)
+  .filterBounds(af)
+  .filterDate('2016-09-30', '2016-12-23')
+  .select('VH')
+  .median()
+  .clip(af);
+
+var sentinel_17 = ee.ImageCollection('COPERNICUS/S1_GRD')
+  .filter(ee.Filter.eq('instrumentMode', 'IW'))
+  .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
+  .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
+  .filterMetadata('resolution_meters', 'equals' , 10)
+  .filterBounds(af)
+  .filterDate('2017-06-01', '2017-08-30')
+  .select('VH')
+  .median()
+  .clip(af);
+
+var sentinel_18 = ee.ImageCollection('COPERNICUS/S1_GRD')
+  .filter(ee.Filter.eq('instrumentMode', 'IW'))
+  .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
+  .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
+  .filterMetadata('resolution_meters', 'equals' , 10)
+  .filterBounds(af)
+  .filterDate('2018-06-01', '2018-08-30')
+  .select('VH')
+  .median()
+  .clip(af);
+
+var sentinel_19 = ee.ImageCollection('COPERNICUS/S1_GRD')
+  .filter(ee.Filter.eq('instrumentMode', 'IW'))
+  .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
+  .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
+  .filterMetadata('resolution_meters', 'equals' , 10)
+  .filterBounds(af)
+  .filterDate('2019-06-01', '2019-08-30')
+  .select('VH')
+  .median()
+  .clip(af);
+
+var sentinel_20 = ee.ImageCollection('COPERNICUS/S1_GRD')
+  .filter(ee.Filter.eq('instrumentMode', 'IW'))
+  .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
+  .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
+  .filterMetadata('resolution_meters', 'equals' , 10)
+  .filterBounds(af)
+  .filterDate('2020-06-01', '2020-08-30')
+  .select('VH')
+  .median()
+  .clip(af);
+
+var sentinel_21 = ee.ImageCollection('COPERNICUS/S1_GRD')
+  .filter(ee.Filter.eq('instrumentMode', 'IW'))
+  .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
+  .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
+  .filterMetadata('resolution_meters', 'equals' , 10)
+  .filterBounds(af)
+  .filterDate('2021-06-01', '2021-08-01')
+  .select('VH')
+  .median()
+  .clip(af);
+
+var serie_sentinel=ee.ImageCollection([
+  sentinel_16,
+  sentinel_17,
+  sentinel_18,
+  sentinel_19,
+  sentinel_20,
+  sentinel_21
+  ]).toBands();
+
+Map.addLayer(sentinel_21, {min:-31.2925,max:-11.0704}, 'VH_MEDIANA_21');
+
+////IMAGENS LANDSAT 8, NDVI e NDWI
+var landsat_15=ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
+  .filterDate('2015-08-01', '2015-08-30')
+  .filterBounds(af)
+  .map(function(img){return img.clip(af)})
+  .median().select(['SR_B4','SR_B5','SR_B6','SR_B7'])
+  .multiply(0.0000275).add(-0.2);
+
+var ndvi_15=landsat_15.select('SR_B5')
+  .subtract(landsat_15.select('SR_B4'))
+  .divide(landsat_15.select('SR_B5')
+  .add(landsat_15.select('SR_B4')));
+
+var ndwi_15=landsat_15.select('SR_B5')
+  .subtract(landsat_15.select('SR_B6'))
+  .divide(landsat_15.select('SR_B5')
+  .add(landsat_15.select('SR_B6')));
+  
+var landsat_16=ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
+  .filterDate('2016-07-01', '2016-07-31')
+  .filterBounds(af)
+  .map(function(img){return img.clip(af)})
+  .median().select(['SR_B4','SR_B5','SR_B6','SR_B7'])
+  .multiply(0.0000275).add(-0.2);
+
+var ndvi_16=landsat_16.select('SR_B5')
+  .subtract(landsat_16.select('SR_B4'))
+  .divide(landsat_16.select('SR_B5')
+  .add(landsat_16.select('SR_B4')));
+
+var ndwi_16=landsat_16.select('SR_B5')
+  .subtract(landsat_16.select('SR_B6'))
+  .divide(landsat_16.select('SR_B5')
+  .add(landsat_16.select('SR_B6')));
+
+var landsat_17=ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
+  .filterDate('2017-07-01', '2017-07-31')
+  .filterBounds(af)
+  .map(function(img){return img.clip(af)})
+  .median().select(['SR_B4','SR_B5','SR_B6','SR_B7'])
+  .multiply(0.0000275).add(-0.2);
+  
+var ndvi_17=landsat_17.select('SR_B5')
+  .subtract(landsat_17.select('SR_B4'))
+  .divide(landsat_17.select('SR_B5')
+  .add(landsat_17.select('SR_B4')));
+  
+var ndwi_17=landsat_17.select('SR_B5')
+  .subtract(landsat_17.select('SR_B6'))
+  .divide(landsat_17.select('SR_B5')
+  .add(landsat_17.select('SR_B6')));
+
+var landsat_18=ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
+  .filterDate('2018-07-01', '2018-07-31')
+  .filterBounds(af)
+  .map(function(img){return img.clip(af)})
+  .median().select(['SR_B4','SR_B5','SR_B6','SR_B7'])
+  .multiply(0.0000275).add(-0.2);
+
+var ndvi_18=landsat_18.select('SR_B5')
+  .subtract(landsat_18.select('SR_B4'))
+  .divide(landsat_18.select('SR_B5')
+  .add(landsat_18.select('SR_B4')));
+  
+var ndwi_18=landsat_18.select('SR_B5')
+  .subtract(landsat_18.select('SR_B6'))
+  .divide(landsat_18.select('SR_B5')
+  .add(landsat_18.select('SR_B6')));  
+
+var landsat_19=ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
+  .filterDate('2019-07-15', '2019-08-02')
+  .filterBounds(af)
+  .map(function(img){return img.clip(af)})
+  .median().select(['SR_B4','SR_B5','SR_B6','SR_B7'])
+  .multiply(0.0000275).add(-0.2);
+
+var ndvi_19=landsat_19.select('SR_B5')
+  .subtract(landsat_19.select('SR_B4'))
+  .divide(landsat_19.select('SR_B5')
+  .add(landsat_19.select('SR_B4')));
+  
+var ndwi_19=landsat_19.select('SR_B5')
+  .subtract(landsat_19.select('SR_B6'))
+  .divide(landsat_19.select('SR_B5')
+  .add(landsat_19.select('SR_B6')));
+
+var landsat_20=ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
+  .filterDate('2020-07-01', '2020-07-31')
+  .filterBounds(af)
+  .map(function(img){return img.clip(af)})
+  .median().select(['SR_B4','SR_B5','SR_B6','SR_B7'])
+  .multiply(0.0000275).add(-0.2);
+
+var ndvi_20=landsat_20.select('SR_B5')
+  .subtract(landsat_20.select('SR_B4'))
+  .divide(landsat_20.select('SR_B5')
+  .add(landsat_20.select('SR_B4')));
+  
+var ndwi_20=landsat_20.select('SR_B5')
+  .subtract(landsat_20.select('SR_B6'))
+  .divide(landsat_20.select('SR_B5')
+  .add(landsat_20.select('SR_B6')));
+
+var landsat_21=ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
+  .filterDate('2021-07-01', '2021-07-31')
+  .filterBounds(af)
+  .map(function(img){return img.clip(af)})
+  .median().select(['SR_B4','SR_B5','SR_B6','SR_B7'])
+  .multiply(0.0000275).add(-0.2);
+
+var ndvi_21=landsat_21.select('SR_B5')
+  .subtract(landsat_21.select('SR_B4'))
+  .divide(landsat_21.select('SR_B5')
+  .add(landsat_21.select('SR_B4')));
+  
+var ndwi_21=landsat_21.select('SR_B5')
+  .subtract(landsat_21.select('SR_B6'))
+  .divide(landsat_21.select('SR_B5')
+  .add(landsat_21.select('SR_B6')));
+
+Map.addLayer(landsat_21,{bands: ['SR_B5', 'SR_B4', 'SR_B7'],min: 0, max: 3},'LANDSAT 8 - 2021');
+Map.addLayer(ndvi_21,{min: -0.4, max: 0.4},'NDVI L8 - 2021');
+Map.addLayer(ndwi_21,{min: -0.4, max: 0.4},'NDWI L8 - 2021');
+
+var serie_ndvi=ee.ImageCollection([
+  ndvi_15,
+  ndvi_16,
+  ndvi_17,
+  ndvi_18,
+  ndvi_19,
+  ndvi_20,
+  ndvi_21
+]).toBands();
+
+var serie_ndwi=ee.ImageCollection([
+  ndwi_15,
+  ndwi_16,
+  ndwi_17,
+  ndwi_18,
+  ndwi_19,
+  ndwi_20,
+  ndwi_21
+]).toBands();
+
+var serie_nir=ee.ImageCollection([
+  landsat_15.select('SR_B5'),
+  landsat_16.select('SR_B5'),
+  landsat_17.select('SR_B5'),
+  landsat_18.select('SR_B5'),
+  landsat_19.select('SR_B5'),
+  landsat_20.select('SR_B5'),
+  landsat_21.select('SR_B5')
+]).toBands();
+
+var serie_red=ee.ImageCollection([
+  landsat_15.select('SR_B4'),
+  landsat_16.select('SR_B4'),
+  landsat_17.select('SR_B4'),
+  landsat_18.select('SR_B4'),
+  landsat_19.select('SR_B4'),
+  landsat_20.select('SR_B4'),
+  landsat_21.select('SR_B4')
+]).toBands();
+
+var serie_swir=ee.ImageCollection([
+  landsat_15.select('SR_B7'),
+  landsat_16.select('SR_B7'),
+  landsat_17.select('SR_B7'),
+  landsat_18.select('SR_B7'),
+  landsat_19.select('SR_B7'),
+  landsat_20.select('SR_B7'),
+  landsat_21.select('SR_B7')
+]).toBands();
+
+////SEGMENTAÇÃO
+var seeds = ee.Algorithms.Image.Segmentation.seedGrid(10);
+
+var snic_res = ee.Algorithms.Image.Segmentation.SNIC({
+  image: serie_ndvi,
+  compactness: 0,
+  connectivity: 8,
+  neighborhoodSize: 0,
+  size: 1,
+  seeds: seeds
+}).reproject({
+  crs: 'EPSG:4326',
+scale: 30
+});
+
+////CONVERSÃO SEGMENTAÇÃO PARA VETOR (SHAPEFILE)
+var snic_res_vec = snic_res.select(0).addBands(snic_res.select(0)).reduceToVectors({
+  geometry: af,
+  crs: snic_res.projection(),
+  scale: 30,
+  geometryType: 'polygon',
+  eightConnected: false,
+  labelProperty: 'masked',
+  reducer: ee.Reducer.mean(),
+  maxPixels: 10e13
+});
+
+Map.addLayer(snic_res_vec,{},'SEGMENTAÇÃO');
+
+////EXPORTANDO OS DADOS PARA O GOOGLE DRIVE
+Export.image.toDrive({
+  image: snic_res.select(0),
+  crs: snic_res.projection(),
+  description:'segmentacao_resultado',
+  folder:'segmentacao_resultado',
+  scale: 30,
+  maxPixels: 1e13,
+});
+
+Export.image.toDrive({
+  image: serie_sentinel,
+  crs: snic_res.projection(),
+  description:'serie_sentinel',
+  folder:'serie_sentinel',
+  scale: 30,
+  maxPixels: 1e13,
+});
+
+Export.image.toDrive({
+  image: serie_ndvi,
+  crs: snic_res.projection(),
+  description:'serie_ndvi',
+  folder:'serie_ndvi',
+  scale: 30,
+  maxPixels: 1e13,
+});
+
+Export.image.toDrive({
+  image: serie_ndwi,
+  crs: snic_res.projection(),
+  description:'serie_ndwi',
+  folder:'serie_ndwi',
+  scale: 30,
+  maxPixels: 1e13,
+});
+
+Export.image.toDrive({
+  image: serie_nir,
+  crs: snic_res.projection(),
+  description:'serie_nir',
+  folder:'serie_nir',
+  scale: 30,
+  maxPixels: 1e13,
+});
+
+Export.image.toDrive({
+  image: serie_red,
+  crs: snic_res.projection(),
+  description:'serie_red',
+  folder:'serie_red',
+  scale: 30,
+  maxPixels: 1e13,
+});
+
+Export.image.toDrive({
+  image: serie_swir,
+  crs: snic_res.projection(),
+  description:'serie_swir',
+  folder:'serie_swir',
+  scale: 30,
+  maxPixels: 1e13,
+});
+
+Export.table.toDrive({
+  collection: snic_res_vec,
+  folder: 'segmentacao_shape',
+  description: 'segmentacao_shape',
+  fileFormat: 'shp'
+})
+
+////IMAGEM COEF. TAU DE MANN-KENDALL DO NDVI
+var serie_ndvi=ee.ImageCollection([
+  ndvi_15,
+  ndvi_16,
+  ndvi_17,
+  ndvi_18,
+  ndvi_19,
+  ndvi_20,
+  ndvi_21
+]);
+
+var tend_ndvi=serie_ndvi.reduce(ee.Reducer.kendallsCorrelation(1));
+Map.addLayer(tend_ndvi.select('SR_B5_tau'), {min:-0.6,max:0.6,palette:["red","yellow","blue"]},'TAU_MK_NDVI' );
+
+Export.image.toDrive({
+  image: tend_ndvi,
+  crs: tend_ndvi.projection(),
+  description:'tend_ndvi',
+  folder:'tend_ndvi',
+  scale: 30,
+  maxPixels: 1e13,
+});
+////FIM
